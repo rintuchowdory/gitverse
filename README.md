@@ -63,3 +63,9 @@ Secrets: `RENDER_API_KEY`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`,
 `VERCEL_TOKEN`, `GROQ_API_KEY`, `GITHUB_TOKEN`, optional `GROQ_MODEL`.
 
 CORS is limited to `https://rintuchowdory.github.io` and local dev origins.
+
+### Daily digest
+
+A Base44 workflow ("GitVerse Tagesbericht", daily 07:30 Europe/Berlin) calls the
+`sendGitverseDigest` backend function, which reads the Worker `/digest?ai=1` and
+emails the summary to the owner. Nothing is deployed or changed by it.
