@@ -3,6 +3,7 @@ import {
   fetchUser, fetchRepos, fetchEvents, fetchCommits, fetchIssues,
   fetchPullRequests, fetchReleases, searchRepos, setToken, hasToken, rate, GitHubError,
 } from './api.js'
+import { DeploymentsView, CIView, BriefView, WatchlistView } from './Views.jsx'
 
 const DEFAULT_LOGIN = 'rintuchowdory'
 
@@ -150,6 +151,10 @@ export default function App() {
           {view === 'pulls' && <RepoPicker repos={repos} action="pulls" onPick={openRepo} />}
           {view === 'releases' && <RepoPicker repos={repos} action="releases" onPick={openRepo} />}
           {view === 'search' && <SearchView />}
+          {view === 'deployments' && <DeploymentsView />}
+          {view === 'ci' && <CIView />}
+          {view === 'brief' && <BriefView />}
+          {view === 'watchlist' && <WatchlistView />}
           {view === 'repo' && selected && (
             <RepoDetail repo={selected} back={() => nav('repos')} />
           )}
@@ -178,6 +183,15 @@ function Sidebar({ user, stats, repos, view, nav, onSettings }) {
       items: [
         { id: 'activity', icon: I.activity, label: 'Commits Feed' },
         { id: 'search', icon: I.search, label: 'GitHub Search' },
+      ],
+    },
+    {
+      section: 'SERVICES',
+      items: [
+        { id: 'deployments', icon: '⬢', label: 'Deployments' },
+        { id: 'ci', icon: '✕', label: 'CI Detective' },
+        { id: 'brief', icon: '✦', label: 'AI Briefing' },
+        { id: 'watchlist', icon: '☰', label: 'Watchlist' },
       ],
     },
   ]
