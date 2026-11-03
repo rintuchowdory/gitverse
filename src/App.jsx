@@ -273,7 +273,8 @@ function TopBar({ query, setQuery, onRefresh, loading }) {
 function Dashboard({ user, repos, stats, events, loading, openRepo, nav }) {
   const hour = new Date().getHours()
   const greet = hour < 11 ? 'Guten Morgen' : hour < 18 ? 'Tag' : 'Guten Abend'
-  const name = user?.login ? user.login.charAt(0).toUpperCase() + user.login.slice(1) : 'zusammen'
+  const parts = (user?.name || '').trim().split(/\s+/).filter(Boolean)
+  const name = parts.length ? parts[parts.length - 1] : (user?.login ? user.login : 'zusammen')
   const topRepos = repos.slice(0, 4)
   const commits = eventsToCommits(events).slice(0, 6)
 
