@@ -283,6 +283,44 @@ function TopBar({ query, setQuery, onRefresh, loading }) {
   )
 }
 
+/* ------------------------------ Terminal panel ----------------------------- */
+function TerminalPanel({ stats, repos, loading }) {
+  const [now, setNow] = useState(new Date())
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000)
+    return () => clearInterval(t)
+  }, [])
+
+  const pad = (n) => String(n).padStart(2, '0')
+  const stamp = now.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' })
+
+  return (
+    <div className="terminal">
+      <div className="terminal-bar">
+        <span className="dot" /><span className="dot" /><span className="dot" />
+        <span className="terminal-title">gitverse@node ~/monitor</span>
+      </div>
+      <div className="terminal-body">
+        <div className="terminal-clock">
+          <span>{pad(now.getHours())}</span>
+          <span className="blink">:</span>
+          <span>{pad(now.getMinutes())}</span>
+          <span className="terminal-sec">{pad(now.getSeconds())}</span>
+        </div>
+        <div className="terminal-date mono">{stamp} · LOCAL</div>
+        <div className="terminal-rows mono">
+          <div><span>status</span><b className="ok">online</b></div>
+          <div><span>api</span><b>{rate.remaining ?? '—'}/{rate.limit ?? '—'}</b></div>
+          <div><span>repos</span><b>{loading ? '···' : repos.length}</b></div>
+          <div><span>stars</span><b>{loading ? '···' : num(stats.stars)}</b></div>
+          <div><span>issues</span><b>{loading ? '···' : num(stats.open)}</b></div>
+        </div>
+        <div className="terminal-cursor mono">&gt; watch --all <span className="blink">▊</span></div>
+      </div>
+    </div>
+  )
+}
+
 /* -------------------------------- Dashboard -------------------------------- */
 function Dashboard({ user, repos, stats, events, loading, openRepo, nav }) {
   const hour = new Date().getHours()
@@ -294,28 +332,39 @@ function Dashboard({ user, repos, stats, events, loading, openRepo, nav }) {
 
   return (
     <>
-      <section className="hero">
-        <div>
+      <section className="hero hero-digital">
+        <div className="hero-grid" aria-hidden="true" />
+        <div className="hero-scan" aria-hidden="true" />
+        <div className="hero-body">
+          <div className="mono-line mono">&gt; session.init --read-only <span className="blink">_</span></div>
           <h1>{greet}, {name} 👋</h1>
           <p>
             {loading ? 'Lade deine Repositories…'
               : `${repos.length} Repositories im Blick, ${num(stats.stars)} Sterne gesammelt. Alles read-only, nichts wird verändert.`}
           </p>
           <div className="hero-badges">
-            <span className="badge indigo">{I.repo} {repos.length} Repos</span>
-            <span className="badge gold">{I.star} {num(stats.stars)} Stars</span>
-            <span className="badge green">{I.eye} {num(stats.forks)} Forks</span>
-            {stats.topLang && <span className="badge">{stats.topLang[0]}</span>}
+            <span className="badge indigo mono">{I.repo} {repos.length} REPOS</span>
+            <span className="badge gold mono">{I.star} {num(stats.stars)} STARS</span>
+            <span className="badge green mono">{I.eye} {num(stats.forks)} FORKS</span>
+            {stats.topLang && <span className="badge mono">{stats.topLang[0].toUpperCase()}</span>}
           </div>
         </div>
-        <div className="hero-ring">◈</div>
+        <TerminalPanel stats={stats} repos={repos} loading={loading} />
       </section>
 
+      <div className="ticker mono">
+        <span className="ticker-label">SYS</span>
+        <span className="ticker-text">
+          TRACKING {loading ? '···' : repos.length} REPOS · {loading ? '···' : num(stats.stars)} STARS · {loading ? '···' : num(stats.forks)} FORKS · TOP {stats.topLang ? stats.topLang[0].toUpperCase() : '—'} · READ-ONLY MODE
+        </span>
+        <span className="blink">▊</span>
+      </div>
+
       <section className="stats">
-        <Stat icon={I.repo} label="Repositories" value={loading ? '—' : repos.length} hint="öffentlich & eigene" />
-        <Stat icon={I.star} label="Stars gesamt" value={loading ? '—' : num(stats.stars)} hint="über alle Repos" />
-        <Stat icon={I.issue} label="Offene Issues" value={loading ? '—' : num(stats.open)} hint="zählt PRs mit" />
-        <Stat icon={I.release} label="Sprachen" value={loading ? '—' : Object.keys(stats.langs).length} hint={stats.topLang ? `meist ${stats.topLang[0]}` : '—'} />
+        <Stat index="01" icon={I.repo} label="Repositories" value={loading ? '—' : repos.length} hint="öffentlich & eigene" />
+        <Stat index="02" icon={I.star} label="Stars gesamt" value={loading ? '—' : num(stats.stars)} hint="über alle Repos" />
+        <Stat index="03" icon={I.issue} label="Offene Issues" value={loading ? '—' : num(stats.open)} hint="zählt PRs mit" />
+        <Stat index="04" icon={I.release} label="Sprachen" value={loading ? '—' : Object.keys(stats.langs).length} hint={stats.topLang ? `meist ${stats.topLang[0]}` : '—'} />
       </section>
 
       <div className="grid-2">
@@ -363,15 +412,18 @@ function Dashboard({ user, repos, stats, events, loading, openRepo, nav }) {
   )
 }
 
-function Stat({ icon, label, value, hint }) {
+function Stat({ icon, label, value, hint, index }) {
   return (
-    <div className="stat">
+    <div className="stat stat-digital">
       <div className="stat-top">
-        <span className="stat-label">{label}</span>
+        <span className="stat-label">
+          {index ? <span className="stat-index">{index}</span> : null}
+          {label}
+        </span>
         <span className="stat-icon">{icon}</span>
       </div>
-      <div className="stat-value">{value}</div>
-      <div className="stat-hint">{hint}</div>
+      <div className="stat-value mono">{value}</div>
+      <div className="stat-hint mono">{hint}</div>
     </div>
   )
 }
