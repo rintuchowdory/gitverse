@@ -273,7 +273,7 @@ function TopBar({ query, setQuery, onRefresh, loading }) {
 function Dashboard({ user, repos, stats, events, loading, openRepo, nav }) {
   const hour = new Date().getHours()
   const greet = hour < 11 ? 'Guten Morgen' : hour < 18 ? 'Tag' : 'Guten Abend'
-  const name = (user?.name || user?.login || '').split(' ')[0] || 'zusammen'
+  const name = user?.login ? user.login.charAt(0).toUpperCase() + user.login.slice(1) : 'zusammen'
   const topRepos = repos.slice(0, 4)
   const commits = eventsToCommits(events).slice(0, 6)
 
@@ -447,13 +447,15 @@ function eventsToCommits(events) {
         out.push({ message: c.message?.split('\n')[0] || '(kein Text)', repo, date: e.created_at })
       })
     } else if (e.type === 'PullRequestEvent') {
+      const prTitle = e.payload?.pull_request?.title
       out.push({
-        message: `PR #${e.payload?.number}: ${e.payload?.pull_request?.title || ''}`,
+        message: prTitle ? `PR #${e.payload?.number}: ${prTitle}` : `PR #${e.payload?.number} aktualisiert`,
         repo, date: e.created_at,
       })
     } else if (e.type === 'IssuesEvent') {
+      const issueTitle = e.payload?.issue?.title
       out.push({
-        message: `Issue #${e.payload?.issue?.number}: ${e.payload?.issue?.title || ''}`,
+        message: issueTitle ? `Issue #${e.payload?.issue?.number}: ${issueTitle}` : `Issue #${e.payload?.issue?.number} aktualisiert`,
         repo, date: e.created_at,
       })
     } else if (e.type === 'ReleaseEvent') {
