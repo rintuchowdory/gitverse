@@ -303,7 +303,7 @@ function TerminalPanel({ stats, repos, loading }) {
       <div className="terminal-body">
         <div className="terminal-clock">
           <span>{pad(now.getHours())}</span>
-          <span className="blink">:</span>
+          <span className="sep">:</span>
           <span>{pad(now.getMinutes())}</span>
           <span className="terminal-sec">{pad(now.getSeconds())}</span>
         </div>

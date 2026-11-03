@@ -520,3 +520,9 @@ button { font-family: inherit; cursor: pointer; }
   .hero-scan { animation: none; }
   .blink { animation: none; }
 }
+
+.terminal-clock .sep {
+  color: var(--accent);
+  opacity: 0.55;
+  padding: 0 1px;
+}
